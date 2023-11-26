@@ -48,7 +48,7 @@ If you'd like to suggest a new feature or design change, please open an issue fi
 - [x] Theming
   - [ ] Built-in themes
 - [ ] Layout overflow handling
-- [ ] Logo
+- [x] Logo
 - [x] Treevents (Tree-Bound, downwards events)
 - [x] Backevents (Tree-Bound, upwards events)
 - [ ] Platform events (Platform event loop events)
@@ -63,6 +63,7 @@ If you'd like to suggest a new feature or design change, please open an issue fi
 - [ ] Mach Backend
 - [ ] TUI Backend
 - [ ] WASM Backend
+- [ ] Lazy rendering of subtrees
 
 ## Gallery
 
