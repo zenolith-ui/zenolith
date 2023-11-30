@@ -175,7 +175,7 @@ test "widget" {
     });
 
     widget.data.attreebutes = AttreebuteMap.init();
-    _ = try widget.data.attreebutes.?.put(std.testing.allocator, u32, 42);
+    (try widget.data.attreebutes.?.mod(std.testing.allocator, u32)).* = 42;
 
     try std.testing.expectEqual(@as(u32, 42), widget.getAttreebute(u32).?.*);
 }

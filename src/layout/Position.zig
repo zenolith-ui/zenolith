@@ -1,5 +1,6 @@
 //! A 2-Dimensional position, typically used to denote where a widget is relative to the top left.
 const Size = @import("Size.zig");
+const Offset = @import("Offset.zig");
 
 x: usize,
 y: usize,
@@ -34,5 +35,14 @@ pub inline fn size(self: Position) Size {
     return .{
         .width = self.x,
         .height = self.y,
+    };
+}
+
+/// Offsets this Position by the given Offset.
+/// The caller asserts that this will not over or underflow.
+pub inline fn offset(self: Position, by: Offset) Position {
+    return .{
+        .x = self.x +% @as(usize, @bitCast(by.x)),
+        .y = self.y +% @as(usize, @bitCast(by.y)),
     };
 }

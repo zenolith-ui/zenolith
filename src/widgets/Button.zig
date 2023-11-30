@@ -4,15 +4,15 @@ const std = @import("std");
 
 const attreebute = @import("../attreebute.zig");
 const backevent = @import("../backevent.zig");
-const font = @import("../font.zig");
 const treev = @import("../treevent.zig");
 const layout = @import("../layout.zig");
 
 const Color = @import("../Color.zig");
+const Span = @import("../text/Span.zig");
 const Widget = @import("../widget.zig").Widget;
 
 label_str: []const u8,
-chunk: ?font.Chunk,
+span: ?Span,
 hovered: bool,
 
 const Button = @This();
@@ -20,7 +20,7 @@ const Button = @This();
 pub fn init(alloc: std.mem.Allocator, label: []const u8) !*Widget {
     const self = Button{
         .label_str = label,
-        .chunk = null,
+        .span = null,
         .hovered = false,
     };
 
@@ -28,9 +28,7 @@ pub fn init(alloc: std.mem.Allocator, label: []const u8) !*Widget {
 }
 
 pub fn deinit(self: *Button, selfw: *Widget) void {
-    _ = selfw;
-    if (self.chunk) |chunk|
-        chunk.deinit();
+    if (self.span) |span| span.deinit(selfw.data.allocator);
 }
 
 pub fn treevent(self: *Button, selfw: *Widget, tv: anytype) !void {
@@ -38,22 +36,30 @@ pub fn treevent(self: *Button, selfw: *Widget, tv: anytype) !void {
         treev.LayoutSize => {
             const style = selfw.getAttreebute(attreebute.ButtonStyle) orelse
                 @panic("The Button widget must have the ButtonStyle attreebute set!");
-            if (self.chunk == null) {
+            if (self.span == null) {
                 const curfont = (selfw.getAttreebute(attreebute.CurrentFont) orelse
                     @panic("The Button widget must have the CurrentFont attreebute set!")).font;
-                self.chunk = try curfont.layout(self.label_str, style.font_size, .none);
+                self.span = try Span.init(selfw.data.allocator, .{
+                    .font = curfont,
+                    .style = style.font_style,
+                    .text = self.label_str,
+                });
             }
 
-            selfw.data.size = self.chunk.?.getSize().add(layout.Size.two(style.padding * 2));
+            selfw.data.size = self.span.?.renderSize().add(layout.Size.two(style.padding * 2));
         },
 
         treev.Draw => {
             const style = selfw.getAttreebute(attreebute.ButtonStyle) orelse
                 @panic("The Button widget must have the ButtonStyle attreebute set!");
-            if (self.chunk == null) {
+            if (self.span == null) {
                 const curfont = (selfw.getAttreebute(attreebute.CurrentFont) orelse
                     @panic("The Button widget must have the CurrentFont attreebute set!")).font;
-                self.chunk = try curfont.layout(self.label_str, style.font_size, .none);
+                self.span = try Span.init(selfw.data.allocator, .{
+                    .font = curfont,
+                    .style = style.font_style,
+                    .text = self.label_str,
+                });
             }
 
             try (if (self.hovered) style.background_hovered else style.background).drawBackground(
@@ -61,10 +67,9 @@ pub fn treevent(self: *Button, selfw: *Widget, tv: anytype) !void {
                 .{ .pos = selfw.data.position, .size = selfw.data.size },
             );
 
-            try tv.painter.text(
+            try tv.painter.span(
                 selfw.data.position.add(layout.Position.two(style.padding)),
-                self.chunk.?,
-                style.text_color,
+                self.span.?,
             );
         },
 

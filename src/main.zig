@@ -5,10 +5,10 @@ const root = @import("root");
 test {
     _ = attreebute;
     _ = backevent;
-    _ = font;
     _ = layout;
     _ = painter;
     _ = platform;
+    _ = text;
     _ = texture;
     _ = treevent;
     _ = util;
@@ -19,10 +19,10 @@ test {
 
 pub const attreebute = @import("attreebute.zig");
 pub const backevent = @import("backevent.zig");
-pub const font = @import("font.zig");
 pub const layout = @import("layout.zig");
 pub const painter = @import("painter.zig");
 pub const platform = @import("platform.zig");
+pub const text = @import("text.zig");
 pub const texture = @import("texture.zig");
 pub const treevent = @import("treevent.zig");
 pub const util = @import("util.zig");

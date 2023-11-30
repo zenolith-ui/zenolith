@@ -1,66 +1,41 @@
 //! A simple text label with a given color and size.
 // TODO: use CurrentFont
-// TODO: free self.chunk
 const std = @import("std");
 
-const font = @import("../font.zig");
+const font = @import("../text/font.zig");
 const treev = @import("../treevent.zig");
 const layout = @import("../layout.zig");
 
 const Color = @import("../Color.zig");
+const Span = @import("../text/Span.zig");
 const Widget = @import("../widget.zig").Widget;
 
 font: *font.Font,
-chunk: font.Chunk,
-color: Color,
-size: usize,
+span: Span,
 
 const Label = @This();
 
-pub const LabelOptions = struct {
-    alloc: std.mem.Allocator,
-    font: *font.Font,
-    text: []const u8,
-    size: usize = 32,
-    color: Color = Color.white(0xff),
-};
-
-pub const UpdateOptions = struct {
-    text: []const u8,
-    font: ?*font.Font = null,
-    size: ?usize = null,
-    color: ?Color = null,
-};
-
-pub fn init(opts: LabelOptions) !*Widget {
+pub fn init(alloc: std.mem.Allocator, opts: Span.InitOptions) !*Widget {
     const self = Label{
         .font = opts.font,
-        .chunk = try opts.font.layout(opts.text, opts.size, .none),
-        .color = opts.color,
-        .size = opts.size,
+        .span = try Span.init(alloc, opts),
     };
-    errdefer self.chunk.deinit();
+    errdefer self.span.deinit(alloc);
 
-    return try Widget.init(opts.alloc, self);
+    return try Widget.init(alloc, self);
 }
 
-pub fn update(self: *Label, opts: UpdateOptions) !void {
-    if (opts.font) |f| self.font = f;
-    if (opts.size) |s| self.size = s;
-    if (opts.color) |col| self.color = col;
-
-    const oldchunk = self.chunk;
-    self.chunk = try self.font.layout(opts.text, self.size, .none);
-    defer oldchunk.deinit();
+pub fn deinit(self: *Label, selfw: *Widget) void {
+    self.span.deinit(selfw.data.allocator);
 }
 
 pub fn treevent(self: *Label, selfw: *Widget, tv: anytype) !void {
     switch (@TypeOf(tv)) {
         treev.LayoutSize => {
-            selfw.data.size = tv.constraints.clamp(self.chunk.getSize());
+            selfw.data.size = tv.constraints.clamp(self.span.renderSize());
         },
         treev.Draw => {
-            try tv.painter.text(selfw.data.position, self.chunk, self.color);
+            try tv.painter.span(selfw.data.position, self.span);
         },
         else => try tv.dispatch(selfw),
     }

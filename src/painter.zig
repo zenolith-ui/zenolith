@@ -12,12 +12,12 @@ const std = @import("std");
 const statspatch = @import("statspatch");
 
 const zenolith = @import("main.zig");
-const font = @import("font.zig");
 
 const Color = @import("Color.zig");
 const Position = @import("layout/Position.zig");
 const Rectangle = @import("layout/Rectangle.zig");
 const Size = @import("layout/Size.zig");
+const Span = @import("text/Span.zig");
 const Texture = @import("texture.zig").Texture;
 
 fn Prototype(comptime Self: type) type {
@@ -138,22 +138,10 @@ fn Prototype(comptime Self: type) type {
             );
         }
 
-        /// Draw a given Chunk of laid-out text, typically obtained through the font at the given
-        /// position. The caller asserts that the given chunk is compatible with this painter's
-        /// underlying platform.
-        pub fn text(
-            self: *Self,
-            pos: Position,
-            chunk: font.Chunk,
-            color: Color,
-        ) !void {
-            return statspatch.implcall(
-                self,
-                .ptr,
-                "text",
-                anyerror!void,
-                .{ pos, chunk, color },
-            );
+        /// Draw the given span of text at the given position.
+        /// The caller asserts that the font of the span is from the same platform as this painter.
+        pub fn span(self: *Self, pos: Position, text_span: Span) !void {
+            return statspatch.implcall(self, .ptr, "span", anyerror!void, .{ pos, text_span });
         }
     };
 }
