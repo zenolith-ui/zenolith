@@ -14,11 +14,13 @@ const Platform = @import("platform.zig").Platform;
 test {
     _ = Box;
     _ = Button;
+    _ = ChunkView;
     _ = Label;
 }
 
 pub const Box = @import("widgets/Box.zig");
 pub const Button = @import("widgets/Button.zig");
+pub const ChunkView = @import("widgets/ChunkView.zig");
 pub const Label = @import("widgets/Label.zig");
 
 // TODO: avoid anyerror here

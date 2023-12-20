@@ -20,13 +20,14 @@ pub fn init(alloc: std.mem.Allocator, opts: Span.InitOptions) !*Widget {
         .font = opts.font,
         .span = try Span.init(alloc, opts),
     };
-    errdefer self.span.deinit(alloc);
+    errdefer self.span.deinit();
 
     return try Widget.init(alloc, self);
 }
 
 pub fn deinit(self: *Label, selfw: *Widget) void {
-    self.span.deinit(selfw.data.allocator);
+    _ = selfw;
+    self.span.deinit();
 }
 
 pub fn treevent(self: *Label, selfw: *Widget, tv: anytype) !void {

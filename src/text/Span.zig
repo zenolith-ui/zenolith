@@ -8,13 +8,22 @@ const Position = @import("../layout/Position.zig");
 const Size = @import("../layout/Size.zig");
 const Style = @import("Style.zig");
 
-glyphs: std.MultiArrayList(PositionedGlyph) = .{},
+glyphs: std.ArrayList(PositionedGlyph),
 font: *Font,
 style: Style,
+
+/// The position offset from this span's position to it's origin.
+/// Spans may have negative origins relative to their position when glyphs have a negative bearing.
+/// The top left corner of this span would be calculated as position + origin_off.
+origin_off: Position = Position.zero,
 
 /// The Y-coordinate of the baseline of this span relative to it's top.
 /// The chunker uses this for aligning spans.
 baseline_y: usize = 0,
+
+/// The width of the baseline. This is calculated as the distance the cursor moved during layout.
+/// This does not always correspond to renderSize().width due to padding between glyphs.
+baseline_width: usize = 0,
 
 const Span = @This();
 
@@ -33,11 +42,12 @@ pub const InitOptions = struct {
 /// The caller must call deinit when done to free memory.
 pub fn init(alloc: std.mem.Allocator, opts: InitOptions) !Span {
     var self = Span{
+        .glyphs = std.ArrayList(PositionedGlyph).init(alloc),
         .font = opts.font,
         .style = opts.style,
     };
 
-    try self.updateGlyphs(alloc, .{ .text = opts.text });
+    try self.updateGlyphs(.{ .text = opts.text });
     self.layout();
 
     return self;
@@ -54,17 +64,16 @@ pub const UpdateGlyphsOptions = struct {
 /// after this.
 pub fn updateGlyphs(
     self: *Span,
-    alloc: std.mem.Allocator,
     opts: UpdateGlyphsOptions,
 ) !void {
     if (opts.style) |style| self.style = style;
     if (opts.font) |font| self.font = font;
 
-    self.glyphs.shrinkRetainingCapacity(0);
+    self.glyphs.clearRetainingCapacity();
 
     var iter = std.unicode.Utf8Iterator{ .i = 0, .bytes = opts.text };
     while (iter.nextCodepoint()) |codepoint| {
-        try self.glyphs.append(alloc, .{
+        try self.glyphs.append(.{
             .glyph = try self.font.getGlyph(codepoint, self.style),
             .position = Position.zero,
         });
@@ -73,56 +82,42 @@ pub fn updateGlyphs(
 
 /// Positions the glyphs of the span and sets baseline_y.
 pub fn layout(self: *Span) void {
-    const glyphslice = self.glyphs.slice();
+    var cursor = Position.zero;
+    var min_y: isize = 0;
 
-    // We start at the middle of the "coordinate system" here to leave as much space as possible
-    // in all directions. This is later compensated for.
-    var cursor = Position{
-        .x = std.math.maxInt(usize) / 2,
-        .y = std.math.maxInt(usize) / 2,
-    };
+    for (self.glyphs.items) |*pglyph| {
+        pglyph.position = cursor.add(pglyph.glyph.bearing);
 
-    // Minimum position coordinate of the glyphs.
-    var min_pos = Position{
-        .x = std.math.maxInt(usize),
-        .y = std.math.maxInt(usize),
-    };
+        if (pglyph.glyph.bearing.y < min_y) min_y = pglyph.glyph.bearing.y;
 
-    for (glyphslice.items(.glyph), glyphslice.items(.position)) |glyph, *position| {
-        position.* = cursor.offset(glyph.bearing);
-
-        if (position.x < min_pos.x) min_pos.x = position.x;
-        if (position.y < min_pos.y) min_pos.y = position.y;
-
-        cursor.x += glyph.advance;
+        cursor.x += @intCast(pglyph.glyph.advance);
     }
 
-    for (glyphslice.items(.position)) |*pos| {
-        pos.* = pos.sub(min_pos);
+    for (self.glyphs.items) |*pglyph| {
+        pglyph.position.y -= min_y;
     }
 
-    self.baseline_y = cursor.y - min_pos.y;
+    self.origin_off = if (self.glyphs.items.len > 0) self.glyphs.items[0].position else Position.zero;
+    self.baseline_y = @intCast(-min_y);
+    self.baseline_width = @intCast(cursor.x);
 }
 
-/// Free owned data. Caller must provide the same allocator as to init!
-pub fn deinit(self_: Span, alloc: std.mem.Allocator) void {
-    var self = self_;
-    self.glyphs.deinit(alloc);
+/// Free owned data.
+pub fn deinit(self: Span) void {
+    self.glyphs.deinit();
 }
 
 /// This determines the size of the span as rendered. This fully contains the glyphs.
+/// The given size is to be treated as relative to the span's origin, with origin_off calculated in.
 pub fn renderSize(self: Span) Size {
-    var size = Size.zero;
+    if (self.glyphs.items.len == 0) return Size.zero;
+     
+    var max = Position.two(std.math.minInt(isize));
 
-    const glyphslice = self.glyphs.slice();
-
-    for (glyphslice.items(.glyph), glyphslice.items(.position)) |glyph, pos| {
-        const xmax = glyph.size.width + pos.x;
-        const ymax = glyph.size.height + pos.y;
-
-        if (xmax > size.width) size.width = xmax;
-        if (ymax > size.height) size.height = ymax;
+    for (self.glyphs.items) |glyph| {
+        max.y = @max(max.y, glyph.position.y + @as(isize, @intCast(glyph.glyph.size.height)));
+        max.x = @max(max.x, glyph.position.x + @as(isize, @intCast(glyph.glyph.size.width)));
     }
 
-    return size;
+    return max.sub(self.origin_off).size();
 }

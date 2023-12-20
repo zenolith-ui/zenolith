@@ -189,27 +189,27 @@ pub fn treevent(self: *Box, selfw: *Widget, tv: anytype) anyerror!void {
             ) |child, offset, positioning| {
                 const child_pos = switch (self.direction) {
                     .vertical => switch (positioning) {
-                        .left => .{ .x = tv.position.x, .y = tv.position.y + offset },
+                        .left => .{ .x = tv.position.x, .y = tv.position.y + @as(isize, @intCast(offset)) },
                         .center => .{
                             .x = tv.position.x +
-                                @divTrunc(selfw.data.size.width, 2) - @divTrunc(child.data.size.width, 2),
-                            .y = tv.position.y + offset,
+                                @as(isize, @intCast(@divTrunc(selfw.data.size.width, 2) - @divTrunc(child.data.size.width, 2))),
+                            .y = tv.position.y + @as(isize, @intCast(offset)),
                         },
                         .right => .{
-                            .x = tv.position.x + selfw.data.size.width - child.data.size.width,
-                            .y = tv.position.y + offset,
+                            .x = tv.position.x + @as(isize, @intCast(selfw.data.size.width - child.data.size.width)),
+                            .y = tv.position.y + @as(isize, @intCast(offset)),
                         },
                     },
                     .horizontal => switch (positioning) {
-                        .left => .{ .x = tv.position.x + offset, .y = tv.position.y },
+                        .left => .{ .x = tv.position.x + @as(isize, @intCast(offset)), .y = tv.position.y },
                         .center => .{
-                            .x = tv.position.x + offset,
+                            .x = tv.position.x + @as(isize, @intCast(offset)),
                             .y = tv.position.y +
-                                @divTrunc(selfw.data.size.height, 2) - @divTrunc(child.data.size.height, 2),
+                                @as(isize, @intCast(@divTrunc(selfw.data.size.height, 2) - @divTrunc(child.data.size.height, 2))),
                         },
                         .right => .{
-                            .x = tv.position.x + offset,
-                            .y = tv.position.y + selfw.data.size.height - child.data.size.height,
+                            .x = tv.position.x + @as(isize, @intCast(offset)),
+                            .y = tv.position.y + @as(isize, @intCast(selfw.data.size.height - child.data.size.height)),
                         },
                     },
                 };

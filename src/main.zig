@@ -35,6 +35,7 @@ pub const Color = @import("Color.zig");
 pub const default_widget_impls = [_]type{
     widget.Box,
     widget.Button,
+    widget.ChunkView,
     widget.Label,
 };
 

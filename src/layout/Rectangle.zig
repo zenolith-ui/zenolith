@@ -20,6 +20,6 @@ pub inline fn area(self: Rectangle) usize {
 pub inline fn contains(self: Rectangle, pos: Position) bool {
     return pos.x >= self.pos.x and
         pos.y >= self.pos.y and
-        pos.x <= self.pos.x + self.size.width and
-        pos.y <= self.pos.y + self.size.height;
+        pos.x <= self.pos.x + @as(isize, @intCast(self.size.width)) and
+        pos.y <= self.pos.y + @as(isize, @intCast(self.size.height));
 }

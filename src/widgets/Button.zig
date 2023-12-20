@@ -28,7 +28,8 @@ pub fn init(alloc: std.mem.Allocator, label: []const u8) !*Widget {
 }
 
 pub fn deinit(self: *Button, selfw: *Widget) void {
-    if (self.span) |span| span.deinit(selfw.data.allocator);
+    _ = selfw;
+    if (self.span) |span| span.deinit();
 }
 
 pub fn treevent(self: *Button, selfw: *Widget, tv: anytype) !void {
@@ -68,7 +69,7 @@ pub fn treevent(self: *Button, selfw: *Widget, tv: anytype) !void {
             );
 
             try tv.painter.span(
-                selfw.data.position.add(layout.Position.two(style.padding)),
+                selfw.data.position.add(layout.Position.two(@intCast(style.padding))),
                 self.span.?,
             );
         },
