@@ -2,7 +2,7 @@
 const Color = @import("../Color.zig");
 
 /// This is the Size of the font in pixels. Some backends (namely, TUI-based ones) may not support this.
-size: usize = 24,
+size: u31 = 24,
 
 bold: bool = false,
 italic: bool = false,

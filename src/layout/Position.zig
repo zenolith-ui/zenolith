@@ -1,15 +1,15 @@
 //! A 2-Dimensional position, typically used to denote where a widget is relative to the top left.
 const Size = @import("Size.zig");
 
-x: isize,
-y: isize,
+x: i32,
+y: i32,
 
 const Position = @This();
 
 pub const zero = two(0);
 
 /// Returns a Position where both components are identical.
-pub inline fn two(pos: isize) Position {
+pub inline fn two(pos: i32) Position {
     return .{ .x = pos, .y = pos };
 }
 

@@ -19,5 +19,5 @@ size: Size,
 bearing: Position,
 
 /// How much the cursor should move to the right after this glyph.
-advance: usize,
+advance: u31,
 

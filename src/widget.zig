@@ -107,12 +107,12 @@ fn Prototype(comptime Self: type) type {
         /// Returns the widget's flex expand factor, or 0 if it should not be expanded.
         /// Simple wrappers should delegate this to their child.
         /// Used by widgets such as Box to determine the size of their children.
-        pub fn getFlexExpand(self: Self) usize {
+        pub fn getFlexExpand(self: Self) u31 {
             return statspatch.implcallOptional(
                 self,
                 .self,
                 "getFlexExpand",
-                usize,
+                u31,
                 .{self},
             ) orelse 0;
         }

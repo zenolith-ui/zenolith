@@ -12,8 +12,8 @@ fn FontPrototype(comptime Self: type) type {
 
     return struct {
         /// For a given font size in pixels, returns the offset between lines.
-        pub fn yOffset(self: *Self, size: usize) usize {
-            return statspatch.implcall(self, .ptr, "yOffset", usize, .{size});
+        pub fn yOffset(self: *Self, size: u31) u31 {
+            return statspatch.implcall(self, .ptr, "yOffset", u31, .{size});
         }
 
         pub fn getGlyph(self: *Self, codepoint: u21, style: Style) !Glyph {

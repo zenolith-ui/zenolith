@@ -8,6 +8,6 @@ background: BackgroundStyle,
 background_hovered: BackgroundStyle,
 
 /// Spacing between the text and the button's outer bounds.
-padding: usize,
+padding: u31,
 
 font_style: Style,

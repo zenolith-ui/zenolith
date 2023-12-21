@@ -69,7 +69,7 @@ pub fn treevent(self: *Button, selfw: *Widget, tv: anytype) !void {
             );
 
             try tv.painter.span(
-                selfw.data.position.add(layout.Position.two(@intCast(style.padding))),
+                selfw.data.position.add(layout.Position.two(style.padding)),
                 self.span.?,
             );
         },

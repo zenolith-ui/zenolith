@@ -23,7 +23,7 @@ pub const ChildPositioning = enum {
 pub const Child = struct {
     widget: *Widget,
     /// Offset from the start of the box. Used for positioning.
-    offset: usize = 0,
+    offset: u31 = 0,
 
     pos: ChildPositioning,
 };
@@ -59,11 +59,11 @@ pub fn treevent(self: *Box, selfw: *Widget, tv: anytype) anyerror!void {
             const slice = self.children.slice();
 
             // The maximum size of the children in the direction orthogonal to that of the Box.
-            var max_orth_size: usize = if (self.orth_expand) switch (self.direction) {
+            var max_orth_size: u31 = if (self.orth_expand) switch (self.direction) {
                 .vertical => tv.constraints.max.width,
                 .horizontal => tv.constraints.max.height,
             } else 0;
-            var cur_pos: usize = 0;
+            var cur_pos: u31 = 0;
 
             // first pass, initial sizes
             {
@@ -133,7 +133,7 @@ pub fn treevent(self: *Box, selfw: *Widget, tv: anytype) anyerror!void {
                     if (maybe_fes) |fes| {
                         const child_cons = switch (self.direction) {
                             .vertical => v: {
-                                const child_height = @as(usize, @intFromFloat(fes)) +
+                                const child_height = @as(u31, @intFromFloat(fes)) +
                                     child.data.size.height;
 
                                 break :v layout.Constraints.tight(.{
@@ -142,7 +142,7 @@ pub fn treevent(self: *Box, selfw: *Widget, tv: anytype) anyerror!void {
                                 });
                             },
                             .horizontal => h: {
-                                const child_width = @as(usize, @intFromFloat(fes)) +
+                                const child_width = @as(u31, @intFromFloat(fes)) +
                                     child.data.size.width;
 
                                 break :h layout.Constraints.tight(.{
@@ -189,27 +189,27 @@ pub fn treevent(self: *Box, selfw: *Widget, tv: anytype) anyerror!void {
             ) |child, offset, positioning| {
                 const child_pos = switch (self.direction) {
                     .vertical => switch (positioning) {
-                        .left => .{ .x = tv.position.x, .y = tv.position.y + @as(isize, @intCast(offset)) },
+                        .left => .{ .x = tv.position.x, .y = tv.position.y + offset },
                         .center => .{
                             .x = tv.position.x +
-                                @as(isize, @intCast(@divTrunc(selfw.data.size.width, 2) - @divTrunc(child.data.size.width, 2))),
-                            .y = tv.position.y + @as(isize, @intCast(offset)),
+                                @divTrunc(selfw.data.size.width, 2) - @divTrunc(child.data.size.width, 2),
+                            .y = tv.position.y + offset,
                         },
                         .right => .{
-                            .x = tv.position.x + @as(isize, @intCast(selfw.data.size.width - child.data.size.width)),
-                            .y = tv.position.y + @as(isize, @intCast(offset)),
+                            .x = tv.position.x + selfw.data.size.width - child.data.size.width,
+                            .y = tv.position.y + offset,
                         },
                     },
                     .horizontal => switch (positioning) {
-                        .left => .{ .x = tv.position.x + @as(isize, @intCast(offset)), .y = tv.position.y },
+                        .left => .{ .x = tv.position.x + offset, .y = tv.position.y },
                         .center => .{
-                            .x = tv.position.x + @as(isize, @intCast(offset)),
+                            .x = tv.position.x + offset,
                             .y = tv.position.y +
-                                @as(isize, @intCast(@divTrunc(selfw.data.size.height, 2) - @divTrunc(child.data.size.height, 2))),
+                                @divTrunc(selfw.data.size.height, 2) - @divTrunc(child.data.size.height, 2),
                         },
                         .right => .{
-                            .x = tv.position.x + @as(isize, @intCast(offset)),
-                            .y = tv.position.y + @as(isize, @intCast(selfw.data.size.height - child.data.size.height)),
+                            .x = tv.position.x + offset,
+                            .y = tv.position.y + selfw.data.size.height - child.data.size.height,
                         },
                     },
                 };

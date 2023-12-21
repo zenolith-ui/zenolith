@@ -19,11 +19,11 @@ origin_off: Position = Position.zero,
 
 /// The Y-coordinate of the baseline of this span relative to it's top.
 /// The chunker uses this for aligning spans.
-baseline_y: usize = 0,
+baseline_y: u31 = 0,
 
 /// The width of the baseline. This is calculated as the distance the cursor moved during layout.
 /// This does not always correspond to renderSize().width due to padding between glyphs.
-baseline_width: usize = 0,
+baseline_width: u31 = 0,
 
 const Span = @This();
 
@@ -83,14 +83,14 @@ pub fn updateGlyphs(
 /// Positions the glyphs of the span and sets baseline_y.
 pub fn layout(self: *Span) void {
     var cursor = Position.zero;
-    var min_y: isize = 0;
+    var min_y: i32 = 0;
 
     for (self.glyphs.items) |*pglyph| {
         pglyph.position = cursor.add(pglyph.glyph.bearing);
 
         if (pglyph.glyph.bearing.y < min_y) min_y = pglyph.glyph.bearing.y;
 
-        cursor.x += @intCast(pglyph.glyph.advance);
+        cursor.x += pglyph.glyph.advance;
     }
 
     for (self.glyphs.items) |*pglyph| {
@@ -112,11 +112,11 @@ pub fn deinit(self: Span) void {
 pub fn renderSize(self: Span) Size {
     if (self.glyphs.items.len == 0) return Size.zero;
      
-    var max = Position.two(std.math.minInt(isize));
+    var max = Position.two(std.math.minInt(i32));
 
     for (self.glyphs.items) |glyph| {
-        max.y = @max(max.y, glyph.position.y + @as(isize, @intCast(glyph.glyph.size.height)));
-        max.x = @max(max.x, glyph.position.x + @as(isize, @intCast(glyph.glyph.size.width)));
+        max.y = @max(max.y, glyph.position.y + glyph.glyph.size.height);
+        max.x = @max(max.x, glyph.position.x + glyph.glyph.size.width);
     }
 
     return max.sub(self.origin_off).size();

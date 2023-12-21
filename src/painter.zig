@@ -51,7 +51,7 @@ fn Prototype(comptime Self: type) type {
         pub fn strokeRect(
             self: *Self,
             rectangle: Rectangle,
-            line_width: usize,
+            line_width: u31,
             stroke_color: Color,
             fill_color: ?Color,
         ) !void {
@@ -92,7 +92,7 @@ fn Prototype(comptime Self: type) type {
                 try self.rect(.{
                     .pos = .{
                         .x = rectangle.pos.x,
-                        .y = rectangle.pos.y + @as(isize, @intCast(rectangle.size.height - line_width)),
+                        .y = rectangle.pos.y + rectangle.size.height - line_width,
                     },
                     .size = ud_size,
                 }, stroke_color);
@@ -100,7 +100,7 @@ fn Prototype(comptime Self: type) type {
                 // right
                 try self.rect(.{
                     .pos = .{
-                        .x = rectangle.pos.x + @as(isize, @intCast(rectangle.size.width - line_width)),
+                        .x = rectangle.pos.x + rectangle.size.width - line_width,
                         .y = rectangle.pos.y,
                     },
                     .size = lr_size,
@@ -110,8 +110,8 @@ fn Prototype(comptime Self: type) type {
                 if (fill_color) |fc| {
                     if (rectangle.area() > 0) {
                         try self.rect(.{
-                            .pos = rectangle.pos.add(Position.two(@intCast(line_width))),
-                            .size = rectangle.size.sub(Size.two(@intCast(line_width * 2))),
+                            .pos = rectangle.pos.add(Position.two(line_width)),
+                            .size = rectangle.size.sub(Size.two(line_width * 2)),
                         }, fc);
                     }
                 }

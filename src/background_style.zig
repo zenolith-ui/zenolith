@@ -7,7 +7,7 @@ const Rectangle = @import("layout/Rectangle.zig");
 pub const BackgroundStyle = union(enum) {
     none,
     fill: Color,
-    stroked: struct { stroke: Color, fill: ?Color = null, width: usize },
+    stroked: struct { stroke: Color, fill: ?Color = null, width: u31 },
 
     pub fn drawBackground(self: BackgroundStyle, painter: *Painter, rect: Rectangle) !void {
         switch (self) {

@@ -59,11 +59,7 @@ pub const LayoutOptions = struct {
     /// Note that this does not guarantee that chunk's width will be within wrap_width,
     /// as spans may have their wrap_mode set to .never or not fit within the wrap_width.
     /// 0 means no wrapping.
-    wrap_width: usize = 0,
-
-    /// Spacing between lines. The chunk calculates line offset by adding this onto the maximum
-    /// yOffset of the spans.
-    line_spacing: usize = 0,
+    wrap_width: u31 = 0,
 
     /// Also layout spans first.
     layout_spans: bool = false,
@@ -107,9 +103,9 @@ pub fn layout(self: *Chunk, opts: LayoutOptions) void {
                 // For spans with wrap_mode != .never, this is the distance to the end of this span,
                 // otherwise it is either the distance to the next span to satisfy this criterium
                 // or the length of all remaining spans after this one.
-                var width: isize = 0;
+                var width: i32 = 0;
                 for (self.spans.items[i..]) |lspan| {
-                    width += @intCast(lspan.span.baseline_width);
+                    width += lspan.span.baseline_width;
                     if (lspan.wrap_mode != .never) break;
                 }
 
@@ -118,7 +114,7 @@ pub fn layout(self: *Chunk, opts: LayoutOptions) void {
         };
 
         if (should_wrap) {
-            cursor.y += @intCast(self.offsetLineByHeight(line_start_idx, i));
+            cursor.y += self.offsetLineByHeight(line_start_idx, i);
             line_start_idx = i;
             if (cursor.x > self.size.width) self.size.width = @intCast(cursor.x);
             cursor.x = -span.span.origin_off.x;
@@ -126,27 +122,27 @@ pub fn layout(self: *Chunk, opts: LayoutOptions) void {
 
         span.position = .{
             .x = cursor.x,
-            .y = cursor.y - @as(isize, @intCast(span.span.baseline_y)),
+            .y = cursor.y - span.span.baseline_y,
         };
 
-        cursor.x += @intCast(span.span.baseline_width);
+        cursor.x += span.span.baseline_width;
     }
-    cursor.y += @intCast(self.offsetLineByHeight(line_start_idx, self.spans.items.len));
+    cursor.y += self.offsetLineByHeight(line_start_idx, self.spans.items.len);
 
     self.size.height = @intCast(cursor.y);
     if (cursor.x > self.size.width) self.size.width = @intCast(cursor.x);
 }
 
 /// Offsets all chunks in the given range downwards by their line height and returns that line height.
-fn offsetLineByHeight(self: *const Chunk, start_idx: usize, end_idx: usize) usize {
-    var max_height: usize = 0;
+fn offsetLineByHeight(self: *const Chunk, start_idx: usize, end_idx: usize) u31 {
+    var max_height: u31 = 0;
 
     for (self.spans.items[start_idx..end_idx]) |span| {
         max_height = @max(max_height, span.span.font.yOffset(span.span.style.size));
     }
 
     for (self.spans.items[start_idx..end_idx]) |*span| {
-        span.position.y += @intCast(max_height);
+        span.position.y += max_height;
     }
 
     return max_height;
