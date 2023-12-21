@@ -29,8 +29,8 @@ If you'd like to suggest a new feature or design change, please open an issue fi
   - [x] Rectangles
   - [x] Textures
   - [x] Text
-    - [ ] Multi-Color chunks
-    - [ ] Multi-Font chunks
+    - [x] Multi-Color chunks
+    - [x] Multi-Font chunks
   - [ ] Triangles
   - [ ] Matrix Transformations?
   - [ ] Drawing of partial widgets
@@ -53,8 +53,8 @@ If you'd like to suggest a new feature or design change, please open an issue fi
 - [x] Logo
 - [x] Treevents (Tree-Bound, downwards events)
 - [x] Backevents (Tree-Bound, upwards events)
-- [ ] Platform events (Platform event loop events)
-  - [ ] Wrap Backevents
+- [x] Platform events (Platform event loop events)
+  - [x] Wrap Backevents
 - [x] Attreebutes (Tree-Bound, inhereted widget properties)
 - [ ] Documentation
   - [x] In-Code
