@@ -118,12 +118,10 @@ pub fn layout(self: *Chunk, opts: LayoutOptions) void {
         };
 
         if (should_wrap) {
-            const line_height = self.offsetLineByHeight(line_start_idx, i);
-
+            cursor.y += @intCast(self.offsetLineByHeight(line_start_idx, i));
             line_start_idx = i;
             if (cursor.x > self.size.width) self.size.width = @intCast(cursor.x);
             cursor.x = -span.span.origin_off.x;
-            cursor.y += @intCast(line_height);
         }
 
         span.position = .{
@@ -133,7 +131,10 @@ pub fn layout(self: *Chunk, opts: LayoutOptions) void {
 
         cursor.x += @intCast(span.span.baseline_width);
     }
-    _ = self.offsetLineByHeight(line_start_idx, self.spans.items.len);
+    cursor.y += @intCast(self.offsetLineByHeight(line_start_idx, self.spans.items.len));
+
+    self.size.height = @intCast(cursor.y);
+    if (cursor.x > self.size.width) self.size.width = @intCast(cursor.x);
 }
 
 /// Offsets all chunks in the given range downwards by their line height and returns that line height.
