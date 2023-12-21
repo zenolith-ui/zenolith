@@ -142,12 +142,69 @@ fn Prototype(comptime Self: type) type {
         /// Draw the given span of text at the given position.
         /// The caller asserts that the font of the span is from the same platform as this painter.
         pub fn span(self: *Self, pos: Position, text_span: Span) !void {
+            if (zenolith.debug_render) {
+                for (text_span.glyphs.items) |glyph| {
+                    // Size of the glyph suitable for rendering the debug overlay with.
+                    const glyphsize_debug = Size{
+                        .width = @max(2, glyph.glyph.size.width),
+                        .height = @max(2, glyph.glyph.size.height),
+                    };
+                    // Position with bearing removed
+                    try self.strokeRect(
+                        .{
+                            .pos = pos.add(glyph.position).sub(glyph.glyph.bearing),
+                            .size = glyphsize_debug,
+                        },
+                        1,
+                        Color.fromInt(0xffff00ff),
+                        null,
+                    );
+
+                    // Position without bearing
+                    try self.strokeRect(
+                        .{
+                            .pos = pos.add(glyph.position),
+                            .size = glyphsize_debug,
+                        },
+                        1,
+                        Color.fromInt(0xff0000ff),
+                        null,
+                    );
+                }
+                // Baseline
+                try self.rect(
+                    .{
+                        .pos = pos.add(.{ .x = 0, .y = @intCast(text_span.baseline_y) }),
+                        .size = .{ .width = text_span.baseline_width, .height = 2 },
+                    },
+                    Color.fromInt(0x00ff00ff),
+                );
+            }
             return statspatch.implcall(self, .ptr, "span", anyerror!void, .{ pos, text_span });
         }
 
         /// Draw the given chunk of text at the given position.
         /// The caller asserts that the font of the spans of this chunk is from the same platform as this painter.
         pub fn chunk(self: *Self, pos: Position, text_chunk: Chunk) !void {
+            if (zenolith.debug_render) {
+                for (text_chunk.spans.items) |sspan| {
+                    const rendersize = sspan.span.renderSize();
+
+                    // Size of spans suitable for debug rendering.
+                    const spansize_debug = Size{
+                        .width = @max(4, rendersize.width),
+                        .height = @max(4, rendersize.height),
+                    };
+
+                    try self.strokeRect(
+                        .{ .pos = pos.add(sspan.position), .size = spansize_debug },
+                        2,
+                        Color.fromInt(0xff8000ff),
+                        null,
+                    );
+                }
+            }
+
             if (statspatch.implcallOptional(
                 self,
                 .ptr,

@@ -89,3 +89,9 @@ pub const platform_impls = if (@hasDecl(root_options, "platform_impls"))
     root_options.platform_impls
 else
     default_platform_impls;
+
+/// Set this to true to draw debugging information such as various bounding boxes.
+pub const debug_render: bool = if (@hasDecl(root_options, "debug_render"))
+    root_options.debug_render
+else
+    false;
