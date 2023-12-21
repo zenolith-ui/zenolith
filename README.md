@@ -4,6 +4,8 @@
 
 Zenolith is my attempt at a retained-mode, platform-agnostic, zig-native GUI engine.
 
+**[Join the Matrix room here!](https://matrix.to/#/#zenolith:mzte.de)**
+
 Warning: Zenolith is in an extremely early stage! Many important features such as text editing
 are not yet implemented. Expect breaking changes!
 
