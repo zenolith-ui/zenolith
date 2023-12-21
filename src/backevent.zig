@@ -1,8 +1,6 @@
-//! A Backevent is an event that is headed to the event loop to be handled by the user code. Such an
-//! event is either pushed straight to the platform event loop using Platform.pushBackevent or
-//! handled by widgets, travelling up the widget tree, where widgets can intercept them or
-//! propagate them using the dispatch function. Custom backevents should be declared
-//! in zenolith_options.backevents as this is a statspatch type.
+//! A Backevent is an event that propagates up the widget tree to be handled by widgets.
+//! In case no widget handles it, it's unhandled-handler is called.
+//! Custom backevents should be declared in zenolith_options.backevents as this is a statspatch type.
 const std = @import("std");
 const statspatch = @import("statspatch");
 
