@@ -16,6 +16,7 @@ test {
     _ = widget;
 
     _ = Color;
+    _ = WidgetIter;
 }
 
 pub const attreebute = @import("attreebute.zig");
@@ -31,6 +32,7 @@ pub const util = @import("util.zig");
 pub const widget = @import("widget.zig");
 
 pub const Color = @import("Color.zig");
+pub const WidgetIter = @import("WidgetIter.zig");
 
 /// List of the default widget implementations included with Zenolith.
 /// If you set zenolith_options.widget_impls, include this if you want to use Zenolith's widgets.
