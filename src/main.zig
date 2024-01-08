@@ -5,6 +5,7 @@ const root = @import("root");
 test {
     _ = attreebute;
     _ = backevent;
+    _ = key;
     _ = layout;
     _ = painter;
     _ = platform;
@@ -19,6 +20,7 @@ test {
 
 pub const attreebute = @import("attreebute.zig");
 pub const backevent = @import("backevent.zig");
+pub const key = @import("key.zig");
 pub const layout = @import("layout.zig");
 pub const painter = @import("painter.zig");
 pub const platform = @import("platform.zig");

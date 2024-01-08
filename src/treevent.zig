@@ -13,6 +13,7 @@ const Widget = @import("widget.zig").Widget;
 test {
     _ = Click;
     _ = Draw;
+    _ = KeyPress;
     _ = LayoutPosition;
     _ = LayoutSize;
     _ = Link;
@@ -21,6 +22,7 @@ test {
 
 pub const Click = @import("treevents/Click.zig");
 pub const Draw = @import("treevents/Draw.zig");
+pub const KeyPress = @import("treevents/KeyPress.zig");
 pub const LayoutPosition = @import("treevents/LayoutPosition.zig");
 pub const LayoutSize = @import("treevents/LayoutSize.zig");
 pub const Link = @import("treevents/Link.zig");
