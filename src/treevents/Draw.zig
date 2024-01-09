@@ -8,6 +8,9 @@ const Widget = @import("../widget.zig").Widget;
 
 painter: *Painter,
 
+/// The delta time (time elapsed since the last frame) in nanoseconds.
+dt: u64,
+
 const Draw = @This();
 
 pub fn dispatch(self: Draw, widget: *Widget) !void {
