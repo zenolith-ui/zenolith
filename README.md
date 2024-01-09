@@ -46,7 +46,7 @@ If you'd like to suggest a new feature or design change, please open an issue fi
   - [ ] Tabbed Pane
   - [ ] Split Pane
   - [ ] Scrolled Pane
-- [ ] Focus Stack
+- [ ] Focus System
 - [x] Theming
   - [ ] Built-in themes
 - [ ] Layout overflow handling
