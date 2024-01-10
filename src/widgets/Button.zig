@@ -63,7 +63,10 @@ pub fn treevent(self: *Button, selfw: *Widget, tv: anytype) !void {
                 });
             }
 
-            try (if (self.hovered) style.background_hovered else style.background).drawBackground(
+            try (if (self.hovered or selfw.data.platform.?.data.focused_widget == selfw)
+                style.background_hovered
+            else
+                style.background).drawBackground(
                 tv.painter,
                 .{ .pos = selfw.data.position, .size = selfw.data.size },
             );
@@ -83,8 +86,23 @@ pub fn treevent(self: *Button, selfw: *Widget, tv: anytype) !void {
             }
         },
 
+        *treev.KeyPress => {
+            if (tv.action == .press and tv.scancode == .space) {
+                tv.handled = true;
+                try selfw.backevent(backevent.Backevent.create(
+                    backevent.ButtonActivated{ .btn_widget = selfw },
+                    {},
+                ));
+            }
+        },
+
         treev.MouseMove => {
             self.hovered = tv.isOnWidget(selfw.*);
+        },
+
+        *treev.FocusNext => {
+            tv.acquireFocus(selfw);
+            try tv.dispatch(selfw);
         },
 
         else => try tv.dispatch(selfw),

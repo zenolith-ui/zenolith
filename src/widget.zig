@@ -146,6 +146,42 @@ fn Prototype(comptime Self: type) type {
                 .{ self, position },
             ) orelse error.Unsupported;
         }
+
+        /// Returns true if self is a child widget of other.
+        pub fn isChildOf(self: *Self, other: *Widget) bool {
+            var nextp = self.data.parent;
+            while (nextp) |p| {
+                if (p == other)
+                    return true;
+
+                nextp = p.data.parent;
+            }
+
+            return false;
+        }
+
+        /// Called to unlink this widget from the widget tree.
+        /// This does not disassociate the widget tree from the platform. If this is desired, call
+        /// link(null, null) instead.
+        /// The platform will be notified of this, which is necessary to prevent pointers outside
+        /// the widget tree.
+        /// It is safe to deinitialize the subtree after it has been unlinked.
+        pub fn unlink(self: *Self) !void {
+            try (statspatch.implcallOptional(self, .ptr, "unlink", anyerror!void, .{self}) orelse {});
+
+            self.data.parent = null;
+            if (self.data.platform) |p| try p.onSubtreeUnlink(self);
+        }
+
+        /// Links this widget subtree to a given parent and platform, both of which may be null.
+        /// If a widget wishes to implement custom behaviour on being linked, it should handle
+        /// the Link treevent.
+        pub fn link(self: *Self, parent: ?*Widget, platform: ?*Platform) !void {
+            if (parent == null or platform == null)
+                if (self.data.platform) |p| try p.onSubtreeUnlink(self);
+
+            try treev.fire(self, treev.Link{ .parent = parent, .platform = platform });
+        }
     };
 }
 

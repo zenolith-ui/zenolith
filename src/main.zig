@@ -2,6 +2,9 @@ const std = @import("std");
 
 const root = @import("root");
 
+/// A zenolith-scoped logger for internal use.
+pub const log = std.log.scoped(.zenolith);
+
 test {
     _ = attreebute;
     _ = backevent;
