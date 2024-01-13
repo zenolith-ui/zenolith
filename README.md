@@ -39,14 +39,16 @@ If you'd like to suggest a new feature or design change, please open an issue fi
   - [x] Box (FlowBox-like algorithm)
   - [x] Button
   - [x] Label
-    - [ ] Word Wrapping
-    - [ ] Character Wrapping
+    - [x] Word Wrapping
+    - [x] Character Wrapping
     - [ ] Ellipsization
   - [ ] Text Edit
+    - [ ] Single Line
+    - [ ] Multi Line
   - [ ] Tabbed Pane
   - [ ] Split Pane
   - [ ] Scrolled Pane
-- [ ] Focus System
+- [x] Focus System
 - [x] Theming
   - [ ] Built-in themes
 - [ ] Layout overflow handling
