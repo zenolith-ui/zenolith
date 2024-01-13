@@ -18,11 +18,13 @@ test {
     _ = BoxStyle;
     _ = ButtonStyle;
     _ = CurrentFont;
+    _ = LabelStyle;
 }
 
 pub const BoxStyle = @import("attreebutes/BoxStyle.zig");
 pub const ButtonStyle = @import("attreebutes/ButtonStyle.zig");
 pub const CurrentFont = @import("attreebutes/CurrentFont.zig");
+pub const LabelStyle = @import("attreebutes/LabelStyle.zig");
 
 pub const AttreebuteMap = struct {
     const Context = struct {

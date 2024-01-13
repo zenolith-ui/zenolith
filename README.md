@@ -50,7 +50,7 @@ If you'd like to suggest a new feature or design change, please open an issue fi
   - [ ] Scrolled Pane
 - [x] Focus System
 - [x] Theming
-  - [ ] Built-in themes
+  - [x] Built-in themes
 - [ ] Layout overflow handling
 - [x] Logo
 - [x] Treevents (Tree-Bound, downwards events)

@@ -19,6 +19,7 @@ test {
     _ = widget;
 
     _ = Color;
+    _ = Theme;
     _ = WidgetIter;
 }
 
@@ -35,6 +36,7 @@ pub const util = @import("util.zig");
 pub const widget = @import("widget.zig");
 
 pub const Color = @import("Color.zig");
+pub const Theme = @import("Theme.zig");
 pub const WidgetIter = @import("WidgetIter.zig");
 
 /// List of the default widget implementations included with Zenolith.
