@@ -86,8 +86,6 @@ pub fn treevent(self: *Box, selfw: *Widget, tv: anytype) anyerror!void {
                         .final = child.getFlexExpand() == 0,
                     });
 
-                    try child_cons.expectFits(child.data.size);
-
                     cur_pos += switch (self.direction) {
                         .vertical => child.data.size.height,
                         .horizontal => child.data.size.width,
@@ -105,7 +103,7 @@ pub fn treevent(self: *Box, selfw: *Widget, tv: anytype) anyerror!void {
                 const remaining_space = switch (self.direction) {
                     .vertical => tv.constraints.max.height,
                     .horizontal => tv.constraints.max.width,
-                } - cur_pos;
+                } -| cur_pos;
                 cur_pos = 0;
 
                 const flex_extra_space = try selfw.data.allocator.alloc(?f64, self.children.len);
@@ -156,8 +154,6 @@ pub fn treevent(self: *Box, selfw: *Widget, tv: anytype) anyerror!void {
                             .constraints = child_cons,
                             .final = true,
                         });
-
-                        try child_cons.expectFits(child.data.size);
                     }
 
                     offset.* = cur_pos;

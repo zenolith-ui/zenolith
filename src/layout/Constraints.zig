@@ -17,13 +17,6 @@ pub fn clamp(self: Self, size: Size) Size {
     };
 }
 
-/// Asserts that a size is within the constraints.
-/// It's good practice to call this on children to verify their size after a LayoutSize event.
-pub fn expectFits(self: Self, size: Size) error{ConstraintViolation}!void {
-    if (!self.fits(size))
-        return error.ConstraintViolation;
-}
-
 /// Checks if a size fits the constraints.
 pub fn fits(self: Self, size: Size) bool {
     return size.width >= self.min.width and
