@@ -119,5 +119,5 @@ pub fn renderSize(self: Span) Size {
         max.x = @max(max.x, glyph.position.x + glyph.glyph.size.width);
     }
 
-    return max.sub(self.origin_off).size();
+    return max.size();
 }

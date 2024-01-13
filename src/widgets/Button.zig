@@ -47,7 +47,10 @@ pub fn treevent(self: *Button, selfw: *Widget, tv: anytype) !void {
                 });
             }
 
-            selfw.data.size = self.span.?.renderSize().add(layout.Size.two(style.padding * 2));
+            selfw.data.size = layout.Size.two(style.padding * 2).add(.{
+                .width = self.span.?.baseline_width,
+                .height = self.span.?.font.yOffset(self.span.?.style.size),
+            });
         },
 
         treev.Draw => {
@@ -72,7 +75,10 @@ pub fn treevent(self: *Button, selfw: *Widget, tv: anytype) !void {
             );
 
             try tv.painter.span(
-                selfw.data.position.add(layout.Position.two(style.padding)),
+                selfw.data.position.add(layout.Position.two(style.padding)).add(.{
+                    .x = 0,
+                    .y = self.span.?.font.yOffset(self.span.?.style.size) - self.span.?.baseline_y,
+                }),
                 self.span.?,
             );
         },
