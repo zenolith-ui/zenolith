@@ -2,4 +2,3 @@
 const BackgroundStyle = @import("../background_style.zig").BackgroundStyle;
 
 background: BackgroundStyle = .none,
-

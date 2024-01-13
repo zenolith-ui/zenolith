@@ -20,4 +20,3 @@ bearing: Position,
 
 /// How much the cursor should move to the right after this glyph.
 advance: u31,
-

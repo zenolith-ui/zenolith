@@ -111,7 +111,7 @@ pub fn deinit(self: Span) void {
 /// The given size is to be treated as relative to the span's origin, with origin_off calculated in.
 pub fn renderSize(self: Span) Size {
     if (self.glyphs.items.len == 0) return Size.zero;
-     
+
     var max = Position.two(std.math.minInt(i32));
 
     for (self.glyphs.items) |glyph| {

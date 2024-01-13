@@ -35,6 +35,7 @@ pub fn deinit(self: *Button, selfw: *Widget) void {
 pub fn treevent(self: *Button, selfw: *Widget, tv: anytype) !void {
     switch (@TypeOf(tv)) {
         treev.LayoutSize => {
+            // TODO: do this in Link
             const style = selfw.getAttreebute(attreebute.ButtonStyle) orelse
                 @panic("The Button widget must have the ButtonStyle attreebute set!");
             if (self.span == null) {
@@ -45,6 +46,9 @@ pub fn treevent(self: *Button, selfw: *Widget, tv: anytype) !void {
                     .style = style.font_style,
                     .text = self.label_str,
                 });
+            } else {
+                self.span.?.style = style.font_style;
+                self.span.?.layout();
             }
 
             selfw.data.size = layout.Size.two(style.padding * 2).add(.{
@@ -64,6 +68,9 @@ pub fn treevent(self: *Button, selfw: *Widget, tv: anytype) !void {
                     .style = style.font_style,
                     .text = self.label_str,
                 });
+            } else {
+                self.span.?.style = style.font_style;
+                self.span.?.layout();
             }
 
             try (if (self.hovered or selfw.data.platform.?.data.focused_widget == selfw)
@@ -93,7 +100,11 @@ pub fn treevent(self: *Button, selfw: *Widget, tv: anytype) !void {
         },
 
         *treev.KeyPress => {
-            if (tv.action == .press and tv.scancode == .space) {
+            if (selfw.data.platform.?.data.focused_widget == selfw and
+                !tv.handled and
+                tv.action == .press and
+                tv.scancode == .space)
+            {
                 tv.handled = true;
                 try selfw.backevent(backevent.Backevent.create(
                     backevent.ButtonActivated{ .btn_widget = selfw },

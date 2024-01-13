@@ -68,15 +68,16 @@ pub fn treevent(self: *Box, selfw: *Widget, tv: anytype) anyerror!void {
             // first pass, initial sizes
             {
                 for (slice.items(.widget)) |child| {
-                    var child_cons = tv.constraints;
+                    var child_cons = layout.Constraints{
+                        .max = tv.constraints.max,
+                        .min = layout.Size.zero,
+                    };
                     switch (self.direction) {
                         .vertical => {
                             child_cons.max.height -|= cur_pos;
-                            child_cons.min.height -|= cur_pos;
                         },
                         .horizontal => {
                             child_cons.max.width -|= cur_pos;
-                            child_cons.min.width -|= cur_pos;
                         },
                     }
 
@@ -166,12 +167,12 @@ pub fn treevent(self: *Box, selfw: *Widget, tv: anytype) anyerror!void {
 
             selfw.data.size = tv.constraints.clamp(switch (self.direction) {
                 .vertical => .{
-                    .height = cur_pos,
                     .width = max_orth_size,
+                    .height = cur_pos,
                 },
                 .horizontal => .{
-                    .width = max_orth_size,
-                    .height = cur_pos,
+                    .width = cur_pos,
+                    .height = max_orth_size,
                 },
             });
         },

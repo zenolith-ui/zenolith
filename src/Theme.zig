@@ -56,7 +56,7 @@ pub const catppuccin_macchiato = Theme{
         } },
         .background_hovered = .{ .stroked = .{
             .stroke = Color.fromInt(0xee99a0ff),
-            .fill = Color.fromInt(0x09494d64ff),
+            .fill = Color.fromInt(0x494d64ff),
             .width = 2,
         } },
         .padding = 4,
