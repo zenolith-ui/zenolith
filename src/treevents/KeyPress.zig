@@ -7,6 +7,8 @@ const treev = @import("../treevent.zig");
 
 const Widget = @import("../widget.zig").Widget;
 
+pub const ptrfire = true;
+
 pub const Action = enum {
     down,
     up,
@@ -32,6 +34,6 @@ pub fn dispatch(self: *KeyPress, widget: *Widget) !void {
 
 pub fn postFire(self: *KeyPress, widget: *Widget) !void {
     if (!self.handled and self.action == .press and self.scancode == .tab) {
-        try treev.ptrFire(widget, treev.FocusNext{});
+        try treev.fire(widget, treev.FocusNext{});
     }
 }

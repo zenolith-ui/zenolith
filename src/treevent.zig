@@ -7,10 +7,15 @@
 //! Treevents are encouraged to have a fire function, taking a self parameter and a widget.
 //! This function can be used by code firing a treevent and can, for example, contain code
 //! to do things after the treevent has been fully dispatched or to only conditionally fire it.
+//!
+//! Treevents may have a `ptrfire` declaration of type bool. If this is set to true,
+//! they will be fired as a pointer instead of by themselves. This is useful if treevents have
+//! mutable state.
 const std = @import("std");
 const Widget = @import("widget.zig").Widget;
 
 test {
+    _ = CharType;
     _ = Click;
     _ = Draw;
     _ = FocusNext;
@@ -21,6 +26,7 @@ test {
     _ = MouseMove;
 }
 
+pub const CharType = @import("treevents/CharType.zig");
 pub const Click = @import("treevents/Click.zig");
 pub const Draw = @import("treevents/Draw.zig");
 pub const FocusNext = @import("treevents/FocusNext.zig");
@@ -38,21 +44,17 @@ pub fn fire(widget: *Widget, tv: anytype) !void {
         else => @TypeOf(tv),
     };
 
+    const ptrfire = @hasDecl(Tv, "ptrfire") and Tv.ptrfire;
     var tvv = tv;
 
-    if (@hasDecl(Tv, "preFire")) {
-        try tvv.preFire(widget);
-    }
-    try widget.treevent(tv);
-    if (@hasDecl(Tv, "postFire")) {
-        try tvv.postFire(widget);
-    }
-}
+    // If the treevent wants to be fired by-pointer, and we've not been passed one, take one.
+    const tvp = if (@typeInfo(@TypeOf(tv)) != .Pointer and ptrfire) &tvv else tvv;
 
-/// Same as fire, but creates a temporary variable for the treevent and fires a pointer to it.
-/// This is useful for treevents such as FocusNext that need to store temporary data.
-// TODO: let the treevent decide this and figure this out automatically
-pub fn ptrFire(widget: *Widget, tv: anytype) !void {
-    var tv_var = tv;
-    try fire(widget, &tv_var);
+    if (@hasDecl(Tv, "preFire")) {
+        try tvp.preFire(widget);
+    }
+    try widget.treevent(tvp);
+    if (@hasDecl(Tv, "postFire")) {
+        try tvp.postFire(widget);
+    }
 }

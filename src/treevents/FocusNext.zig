@@ -10,6 +10,8 @@ const zenolith = @import("../main.zig");
 
 const Widget = @import("../widget.zig").Widget;
 
+pub const ptrfire = true;
+
 /// The first widget in the tree wanting to be focused.
 first_acq: ?*Widget = null,
 
