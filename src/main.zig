@@ -44,6 +44,7 @@ pub const default_widget_impls = [_]type{
     widget.Button,
     widget.ChunkView,
     widget.Label,
+    widget.Spacer,
 };
 
 /// The default painter implementations bundled with Zenolith.

@@ -16,12 +16,14 @@ test {
     _ = Button;
     _ = ChunkView;
     _ = Label;
+    _ = Spacer;
 }
 
 pub const Box = @import("widgets/Box.zig");
 pub const Button = @import("widgets/Button.zig");
 pub const ChunkView = @import("widgets/ChunkView.zig");
 pub const Label = @import("widgets/Label.zig");
+pub const Spacer = @import("widgets/Spacer.zig");
 
 // TODO: avoid anyerror here
 fn Prototype(comptime Self: type) type {
