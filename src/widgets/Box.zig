@@ -164,7 +164,7 @@ pub fn treevent(self: *Box, selfw: *Widget, tv: anytype) anyerror!void {
                 }
             }
 
-            selfw.data.size = switch (self.direction) {
+            selfw.data.size = tv.constraints.clamp(switch (self.direction) {
                 .vertical => .{
                     .height = cur_pos,
                     .width = max_orth_size,
@@ -173,7 +173,7 @@ pub fn treevent(self: *Box, selfw: *Widget, tv: anytype) anyerror!void {
                     .width = max_orth_size,
                     .height = cur_pos,
                 },
-            };
+            });
         },
         treev.LayoutPosition => {
             const slice = self.children.slice();
