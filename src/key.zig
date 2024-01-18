@@ -14,12 +14,12 @@ pub const Keycode = enum {
     sleep,
     wake_up,
     mic_mute_toggle,
-    disple_toggle_int_ext,
+    display_toggle_int_ext,
 
     // (Based on) USB Usage Page 0x07: Keyboard/Keypad Page
     // zig fmt: off
     a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z,
-    @"0", @"1", @"2", @"3", @"4", @"5", @"6", @"7", @"8", @"9", @"0",
+    @"1", @"2", @"3", @"4", @"5", @"6", @"7", @"8", @"9", @"0",
 
     enter,
     escape,
@@ -65,6 +65,8 @@ pub const Keycode = enum {
     numpad_comma,
     numpad_enter,
     numpad_backspace,
+    numpad_paren_left,
+    numpad_paren_right,
     numpad_1,
     numpad_2,
     numpad_3,
@@ -77,6 +79,7 @@ pub const Keycode = enum {
     numpad_0,
 
     intl_backslash, // = NonUSBackslash; Not present on US keyboards. Typically near left shift.
+    intl_hash, // = NonUsHash; Never appears together with backslash on keyboards.
     international1, // = IntlRo
     international2, // = KanaMode
     international3, // = IntlYen
@@ -88,13 +91,14 @@ pub const Keycode = enum {
     international9,
     lang1, lang2, lang3, lang4, lang5, lang6, lang7, lang8, lang9,
 
-    context_menu,
+    compose, // = ContextMenu, Application
     power,
 
-    abort,
+    abort, // = Cancel
     open, // = Execute
     help,
     select,
+    stop,
     again,
     undo,
     cut,
@@ -110,9 +114,11 @@ pub const Keycode = enum {
     ctrl_left,
     shift_left,
     alt_left,
+    meta_left,
     ctrl_right,
     shift_right,
     alt_right,
+    meta_right,
     mode, // = AltGr
     // zig fmt: on
 
@@ -168,6 +174,26 @@ pub const Keycode = enum {
     browser_forward,
     browser_stop,
     browser_refresh,
+    browser_bookmarks,
+
+    // Virtual keys that do not have any corresponsing scancode.
+    ampersand,
+    asterisk,
+    at,
+    caret,
+    colon,
+    dollar,
+    exclaim,
+    greater,
+    hash,
+    paren_left,
+    less,
+    percent,
+    plus,
+    question,
+    double_quote,
+    paren_right,
+    underscore,
 };
 
 /// Modifier keys which may be active at the time of a key event.

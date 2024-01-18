@@ -65,7 +65,7 @@ pub fn dispatch(self: *KeyPress, widget: *Widget) !void {
 }
 
 pub fn postFire(self: *KeyPress, widget: *Widget) !void {
-    if (!self.handled and self.action == .press and self.scancode == .tab) {
+    if (!self.handled and self.action == .press and self.key == .tab) {
         try treev.fire(widget, treev.FocusNext{});
     }
 }
