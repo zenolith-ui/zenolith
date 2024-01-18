@@ -4,9 +4,8 @@
 //! and handle a treevent accordingly. It may also choose not to call dispatch on the treevent, or
 //! to conditionally dispatch it.
 //!
-//! Treevents are encouraged to have a fire function, taking a self parameter and a widget.
-//! This function can be used by code firing a treevent and can, for example, contain code
-//! to do things after the treevent has been fully dispatched or to only conditionally fire it.
+//! Treevents should be fired via the `fire` function. This ensures preFire and postFire callbacks
+//! are executed, if present in the Treevent.
 //!
 //! Treevents may have a `ptrfire` declaration of type bool. If this is set to true,
 //! they will be fired as a pointer instead of by themselves. This is useful if treevents have
@@ -15,22 +14,20 @@ const std = @import("std");
 const Widget = @import("widget.zig").Widget;
 
 test {
-    _ = CharType;
     _ = Click;
     _ = Draw;
     _ = FocusNext;
-    _ = KeyPress;
+    _ = KeyInput;
     _ = LayoutPosition;
     _ = LayoutSize;
     _ = Link;
     _ = MouseMove;
 }
 
-pub const CharType = @import("treevents/CharType.zig");
 pub const Click = @import("treevents/Click.zig");
 pub const Draw = @import("treevents/Draw.zig");
 pub const FocusNext = @import("treevents/FocusNext.zig");
-pub const KeyPress = @import("treevents/KeyPress.zig");
+pub const KeyInput = @import("treevents/KeyInput.zig");
 pub const LayoutPosition = @import("treevents/LayoutPosition.zig");
 pub const LayoutSize = @import("treevents/LayoutSize.zig");
 pub const Link = @import("treevents/Link.zig");

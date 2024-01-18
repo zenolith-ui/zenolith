@@ -99,11 +99,11 @@ pub fn treevent(self: *Button, selfw: *Widget, tv: anytype) !void {
             }
         },
 
-        *treev.KeyPress => {
+        *treev.KeyInput => {
             if (selfw.data.platform.?.data.focused_widget == selfw and
                 !tv.handled and
                 tv.action == .press and
-                tv.scancode == .space)
+                tv.key == .space)
             {
                 tv.handled = true;
                 try selfw.backevent(backevent.Backevent.create(
