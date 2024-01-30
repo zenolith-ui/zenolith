@@ -29,6 +29,18 @@ fn Prototype(comptime Self: type) type {
                 }
             }
         }
+
+        /// Do a layout pass on a given widget. The passed widget is asserted to be a root widget of
+        /// this platform.
+        pub fn relayoutRoot(self: *Self, root: *Widget) !void {
+            try statspatch.implcall(
+                self,
+                .ptr,
+                "relayoutRoot",
+                anyerror!void,
+                .{ root },
+            );
+        }
     };
 }
 

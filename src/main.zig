@@ -58,6 +58,7 @@ pub const default_platform_impls = [_]type{};
 /// The default backevents in Zenolith. Remember that these may be required by widgets.
 pub const default_backevents = [_]type{
     backevent.ButtonActivated,
+    backevent.Relayout,
 };
 
 const root_options = if (@hasDecl(root, "zenolith_options")) root.zenolith_options else struct {};

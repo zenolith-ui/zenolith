@@ -6,9 +6,11 @@ const statspatch = @import("statspatch");
 
 test {
     _ = ButtonActivated;
+    _ = Relayout;
 }
 
 pub const ButtonActivated = @import("backevents/ButtonActivated.zig");
+pub const Relayout = @import("backevents/Relayout.zig");
 
 const zenolith = @import("main.zig");
 
@@ -29,13 +31,28 @@ fn Prototype(comptime Self: type) type {
             ) orelse {});
         }
 
+        /// A callback that is automatically invoked before the backevent is propageted up the tree.
+        /// Here, the backevent may make changes to itself before being passed to the parent widget.
+        /// It is not invoked if there is no parent widget, that causes `unhandled` to be called immediately.
+        pub fn prePropagate(self: *Self, next_widget: *Widget) !void {
+            try (statspatch.implcallOptional(
+                self,
+                .ptr,
+                "prePropagate",
+                anyerror!void,
+                .{ self, next_widget },
+            ) orelse {});
+        }
+
         /// Propagates this backevent up the widget tree. If the current (given) Widget has a parent,
         /// the event is propagated to it. Otherwise, the backevent's unhandled handler is called.
         /// Widgets should call this in their backevent handler if they do not wish to modify or
         /// intercept the backevent.
         pub fn dispatch(self: Self, widget: *Widget) anyerror!void {
             if (widget.data.parent) |p| {
-                try p.backevent(self);
+                var selfv = self;
+                try selfv.prePropagate(p);
+                try p.backevent(selfv);
             } else {
                 try self.unhandled(widget);
             }
