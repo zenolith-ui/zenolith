@@ -249,7 +249,7 @@ pub fn addChildPositioned(
     }
 }
 
-pub fn removeChild(self: *Box, selfw: *Widget, position: ?usize) void {
+pub fn removeChild(self: *Box, selfw: *Widget, position: ?usize) *Widget {
     _ = selfw;
     if (position) |pos| {
         const old = self.children.get(pos).widget;

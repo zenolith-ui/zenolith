@@ -135,18 +135,22 @@ fn Prototype(comptime Self: type) type {
         }
 
         /// Removes the child at position or the last child if position is null.
-        /// The function then returns the removed child.
+        /// The function then unlinks and returns the removed child.
         /// The caller must ensure that position is less than children().len and children() is not
         /// empty, otherwise, undefined behaviour is invoked.
         /// Returns error.Unsupported if the widget does not support such functionality.
-        pub fn removeChild(self: *Self, position: usize) !*Widget {
-            return statspatch.implcallOptional(
+        pub fn removeChild(self: *Self, position: ?usize) !*Widget {
+            const child = try (statspatch.implcallOptional(
                 self,
                 .ptr,
                 "removeChild",
-                anyerror!void,
+                anyerror!*Widget,
                 .{ self, position },
-            ) orelse error.Unsupported;
+            ) orelse return error.Unsupported);
+
+            try child.unlink();
+
+            return child;
         }
 
         /// Returns true if self is a child widget of other.
@@ -169,6 +173,7 @@ fn Prototype(comptime Self: type) type {
         /// the widget tree.
         /// It is safe to deinitialize the subtree after it has been unlinked.
         pub fn unlink(self: *Self) !void {
+            zenolith.log.debug("child {s}@{x} unlinked", .{ @tagName(self.u), @intFromPtr(self) });
             try (statspatch.implcallOptional(self, .ptr, "unlink", anyerror!void, .{self}) orelse {});
 
             self.data.parent = null;
