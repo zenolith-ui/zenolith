@@ -50,6 +50,9 @@ pub fn init(alloc: std.mem.Allocator, direction: Direction) !*Widget {
 }
 
 pub fn deinit(self: *Box, selfw: *Widget) void {
+    for (self.children.items(.widget)) |child| {
+        child.deinit();
+    }
     self.children.deinit(selfw.data.allocator);
 }
 

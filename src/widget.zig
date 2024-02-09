@@ -52,14 +52,9 @@ fn Prototype(comptime Self: type) type {
             return self;
         }
 
-        /// Free the widget's resources. Will call an implementation's deinit
-        /// and deinit on all children.
+        /// Free the widget's resources. Will call an implementation's deinit function.
+        /// A widget must ensure to call deinit on all its children!
         pub fn deinit(self: *Self) void {
-            for (self.children()) |child| {
-                // TODO: call child.deinit() here
-                // see: https://github.com/ziglang/zig/issues/17872
-                deinit(child);
-            }
             _ = statspatch.implcallOptional(self, .ptr, "deinit", void, .{self});
             if (self.data.attreebutes) |*map| map.deinit(self.data.allocator);
             self.data.allocator.destroy(self);
