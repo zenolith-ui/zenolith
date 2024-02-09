@@ -51,10 +51,7 @@ pub fn treevent(self: *Button, selfw: *Widget, tv: anytype) !void {
                 self.span.?.layout();
             }
 
-            selfw.data.size = layout.Size.two(style.padding * 2).add(.{
-                .width = self.span.?.baseline_width,
-                .height = self.span.?.font.yOffset(self.span.?.style.size),
-            });
+            selfw.data.size = layout.Size.two(style.padding * 2).add(self.span.?.layoutSize());
         },
 
         treev.Draw => {
@@ -82,10 +79,7 @@ pub fn treevent(self: *Button, selfw: *Widget, tv: anytype) !void {
             );
 
             try tv.painter.span(
-                selfw.data.position.add(layout.Position.two(style.padding)).add(.{
-                    .x = 0,
-                    .y = self.span.?.font.yOffset(self.span.?.style.size) - self.span.?.baseline_y,
-                }),
+                selfw.data.position.add(layout.Position.two(style.padding)).add(self.span.?.layoutOffset()),
                 self.span.?,
             );
         },

@@ -5,23 +5,28 @@ const zenolith = @import("../main.zig");
 
 const Size = @import("../layout/Size.zig");
 const Style = @import("../text/Style.zig");
-const Glyph = @import("Glyph.zig");
 
 fn FontPrototype(comptime Self: type) type {
     std.debug.assert(Self == Font);
 
     return struct {
-        /// For a given font size in pixels, returns the offset between lines.
-        pub fn yOffset(self: *Self, size: u31) u31 {
-            return statspatch.implcall(self, .ptr, "yOffset", u31, .{size});
+        /// For a given font size in pixels, returns the height metrics.
+        pub fn heightMetrics(self: *Self, size: u31) zenolith.text.HeightMetrics {
+            return statspatch.implcall(
+                self,
+                .ptr,
+                "heightMetrics",
+                zenolith.text.HeightMetrics,
+                .{size},
+            );
         }
 
-        pub fn getGlyph(self: *Self, codepoint: u21, style: Style) !Glyph {
+        pub fn getGlyph(self: *Self, codepoint: u21, style: Style) !zenolith.text.Glyph {
             return try statspatch.implcall(
                 self,
                 .ptr,
                 "getGlyph",
-                anyerror!Glyph,
+                anyerror!zenolith.text.Glyph,
                 .{ codepoint, style },
             );
         }

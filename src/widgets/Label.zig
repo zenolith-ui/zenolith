@@ -49,10 +49,7 @@ pub fn treevent(self: *Label, selfw: *Widget, tv: anytype) !void {
             });
         },
         treev.LayoutSize => {
-            selfw.data.size = tv.constraints.clamp(.{
-                .width = self.span.?.baseline_width,
-                .height = self.span.?.font.yOffset(self.span.?.style.size),
-            });
+            selfw.data.size = tv.constraints.clamp(self.span.?.layoutSize());
         },
         treev.Draw => {
             const style = selfw.getAttreebute(LabelStyle) orelse
@@ -61,10 +58,7 @@ pub fn treevent(self: *Label, selfw: *Widget, tv: anytype) !void {
             self.span.?.style = style.font_style;
             self.span.?.layout();
 
-            try tv.painter.span(selfw.data.position.add(.{
-                .x = 0,
-                .y = self.span.?.font.yOffset(self.span.?.style.size) - self.span.?.baseline_y,
-            }), self.span.?);
+            try tv.painter.span(selfw.data.position.add(self.span.?.layoutOffset()), self.span.?);
         },
         else => try tv.dispatch(selfw),
     }

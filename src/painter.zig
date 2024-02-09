@@ -139,7 +139,9 @@ fn Prototype(comptime Self: type) type {
             );
         }
 
-        /// Draw the given span of text at the given position.
+        /// Draw the given span of text at the given position, where the position is the start
+        /// of the span baseline. To work with the top-left corner of the span, you should
+        /// use origin_off or layoutPosition() accordingly.
         /// The caller asserts that the font of the span is from the same platform as this painter.
         pub fn span(self: *Self, pos: Position, text_span: Span) !void {
             if (zenolith.debug_render) {
@@ -174,7 +176,7 @@ fn Prototype(comptime Self: type) type {
                 // Baseline
                 try self.rect(
                     .{
-                        .pos = pos.add(.{ .x = 0, .y = @intCast(text_span.baseline_y) }),
+                        .pos = pos,
                         .size = .{ .width = text_span.baseline_width, .height = 2 },
                     },
                     Color.fromInt(0x00ff00ff),

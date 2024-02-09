@@ -1,9 +1,9 @@
 //! A span is a one-line piece of text. It consists of glyphs and performs single-line layout on them.
 //! It also has information on the font, style, color as well as bounding boxes.
 const std = @import("std");
+const zenolith = @import("../main.zig");
 
 const Font = @import("font.zig").Font;
-const Glyph = @import("Glyph.zig");
 const Position = @import("../layout/Position.zig");
 const Size = @import("../layout/Size.zig");
 const Style = @import("Style.zig");
@@ -12,14 +12,11 @@ glyphs: std.ArrayList(PositionedGlyph),
 font: *Font,
 style: Style,
 
-/// The position offset from this span's position to it's origin.
-/// Spans may have negative origins relative to their position when glyphs have a negative bearing.
-/// The top left corner of this span would be calculated as position + origin_off.
+/// This represents an offset from relative 0/0 to the start of the baseline.
+/// This means that the y component is the height of the highest glyph (minus the below-baseline part).
+/// The x component is a horizontal offset the first glyph may have. This is commonly the case with
+/// letters such as 'j' where the hook would be a little to the left of where the text should be aligned.
 origin_off: Position = Position.zero,
-
-/// The Y-coordinate of the baseline of this span relative to it's top.
-/// The chunker uses this for aligning spans.
-baseline_y: u31 = 0,
 
 /// The width of the baseline. This is calculated as the distance the cursor moved during layout.
 /// This does not always correspond to renderSize().width due to padding between glyphs.
@@ -28,7 +25,7 @@ baseline_width: u31 = 0,
 const Span = @This();
 
 pub const PositionedGlyph = struct {
-    glyph: Glyph,
+    glyph: zenolith.text.Glyph,
     position: Position,
 };
 
@@ -93,12 +90,13 @@ pub fn layout(self: *Span) void {
         cursor.x += pglyph.glyph.advance;
     }
 
-    for (self.glyphs.items) |*pglyph| {
-        pglyph.position.y -= min_y;
-    }
+    //for (self.glyphs.items) |*pglyph| {
+    //    pglyph.position.y -= min_y;
+    //}
 
     self.origin_off = if (self.glyphs.items.len > 0) self.glyphs.items[0].position else Position.zero;
-    self.baseline_y = @intCast(-min_y);
+    self.origin_off.y = -min_y;
+    //self.baseline_y = @intCast(-min_y);
     self.baseline_width = @intCast(cursor.x);
 }
 
@@ -120,4 +118,24 @@ pub fn renderSize(self: Span) Size {
     }
 
     return max.size();
+}
+
+/// The size to be used when this span is laid out stand-alone. It will always fully contain all
+/// glayphs, but unlike render size, it will include padding as required by the font.
+/// Use this if you want to include spans in widgets.
+pub fn layoutSize(self: Span) Size {
+    return .{
+        .width = @intCast(@as(i32, self.baseline_width) + self.origin_off.x),
+        .height = self.font.heightMetrics(self.style.size).totalHeight(),
+    };
+}
+
+/// This is similar to self.origin_off, with the difference that the the baseline won't be
+/// positioned in accordance with the largest glyph but instead using the font height metrics.
+/// This is typically preferred, but may overly complex in some situations.
+pub fn layoutOffset(self: Span) Position {
+    return .{
+        .x = self.origin_off.x,
+        .y = self.font.heightMetrics(self.style.size).y_offset,
+    };
 }

@@ -2,6 +2,7 @@
 //! It may do wrapping on span boundaries depending on the wrap_mode.
 //! You may access the spans field to modify children, but layout must be called again afterwards.
 const std = @import("std");
+const zenolith = @import("../main.zig");
 
 const Position = @import("../layout/Position.zig");
 const Size = @import("../layout/Size.zig");
@@ -114,7 +115,7 @@ pub fn layout(self: *Chunk, opts: LayoutOptions) void {
         };
 
         if (should_wrap) {
-            cursor.y += self.offsetLineByHeight(line_start_idx, i);
+            cursor.y += self.offsetLineByHeight(line_start_idx, i).y_offset;
             line_start_idx = i;
             if (cursor.x > self.size.width) self.size.width = @intCast(cursor.x);
             cursor.x = -span.span.origin_off.x;
@@ -122,28 +123,37 @@ pub fn layout(self: *Chunk, opts: LayoutOptions) void {
 
         span.position = .{
             .x = cursor.x,
-            .y = cursor.y - span.span.baseline_y,
+            .y = cursor.y,
         };
 
         cursor.x += span.span.baseline_width;
     }
-    cursor.y += self.offsetLineByHeight(line_start_idx, self.spans.items.len);
+    const last_metrics = self.offsetLineByHeight(line_start_idx, self.spans.items.len);
+    cursor.y += last_metrics.y_offset;
 
-    self.size.height = @intCast(cursor.y);
+    self.size.height = @intCast(cursor.y + last_metrics.bottom_padding);
     if (cursor.x > self.size.width) self.size.width = @intCast(cursor.x);
 }
 
-/// Offsets all chunks in the given range downwards by their line height and returns that line height.
-fn offsetLineByHeight(self: *const Chunk, start_idx: usize, end_idx: usize) u31 {
-    var max_height: u31 = 0;
+/// Offsets all chunks in the given range downwards by their line y_offset and returns that line's
+/// height metrics..
+fn offsetLineByHeight(self: *const Chunk, start_idx: usize, end_idx: usize) zenolith.text.HeightMetrics {
+    var max = zenolith.text.HeightMetrics{
+        .y_offset = 0,
+        .bottom_padding = 0,
+    };
 
     for (self.spans.items[start_idx..end_idx]) |span| {
-        max_height = @max(max_height, span.span.font.yOffset(span.span.style.size));
+        const metrics = span.span.font.heightMetrics(span.span.style.size);
+        max = .{
+            .y_offset = @max(max.y_offset, metrics.y_offset),
+            .bottom_padding = @max(max.bottom_padding, metrics.bottom_padding),
+        };
     }
 
     for (self.spans.items[start_idx..end_idx]) |*span| {
-        span.position.y += max_height;
+        span.position.y += max.y_offset;
     }
 
-    return max_height;
+    return max;
 }
