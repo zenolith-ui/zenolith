@@ -77,7 +77,7 @@ pub fn updateGlyphs(
     }
 }
 
-/// Positions the glyphs of the span and sets baseline_y.
+/// Positions the glyphs of the span and sets origin_off.
 pub fn layout(self: *Span) void {
     var cursor = Position.zero;
     var min_y: i32 = 0;
@@ -85,18 +85,16 @@ pub fn layout(self: *Span) void {
     for (self.glyphs.items) |*pglyph| {
         pglyph.position = cursor.add(pglyph.glyph.bearing);
 
-        if (pglyph.glyph.bearing.y < min_y) min_y = pglyph.glyph.bearing.y;
+        min_y = @min(min_y, pglyph.glyph.bearing.y);
 
         cursor.x += pglyph.glyph.advance;
     }
 
-    //for (self.glyphs.items) |*pglyph| {
-    //    pglyph.position.y -= min_y;
-    //}
+    self.origin_off = .{
+        .x = if (self.glyphs.items.len > 0) self.glyphs.items[0].position.x else 0,
+        .y = -min_y,
+    };
 
-    self.origin_off = if (self.glyphs.items.len > 0) self.glyphs.items[0].position else Position.zero;
-    self.origin_off.y = -min_y;
-    //self.baseline_y = @intCast(-min_y);
     self.baseline_width = @intCast(cursor.x);
 }
 

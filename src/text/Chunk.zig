@@ -117,7 +117,7 @@ pub fn layout(self: *Chunk, opts: LayoutOptions) void {
         if (should_wrap) {
             cursor.y += self.offsetLineByHeight(line_start_idx, i).y_offset;
             line_start_idx = i;
-            if (cursor.x > self.size.width) self.size.width = @intCast(cursor.x);
+            self.size.width = @max(self.size.width, @as(u31, @intCast(cursor.x)));
             cursor.x = -span.span.origin_off.x;
         }
 
@@ -132,11 +132,11 @@ pub fn layout(self: *Chunk, opts: LayoutOptions) void {
     cursor.y += last_metrics.y_offset;
 
     self.size.height = @intCast(cursor.y + last_metrics.bottom_padding);
-    if (cursor.x > self.size.width) self.size.width = @intCast(cursor.x);
+    self.size.width = @max(self.size.width, @as(u31, @intCast(cursor.x)));
 }
 
 /// Offsets all chunks in the given range downwards by their line y_offset and returns that line's
-/// height metrics..
+/// height metrics.
 fn offsetLineByHeight(self: *const Chunk, start_idx: usize, end_idx: usize) zenolith.text.HeightMetrics {
     var max = zenolith.text.HeightMetrics{
         .y_offset = 0,
