@@ -38,7 +38,7 @@ fn Prototype(comptime Self: type) type {
                 .ptr,
                 "rect",
                 anyerror!void,
-                .{ rectangle, color },
+                .{ self, rectangle, color },
             );
         }
 
@@ -63,7 +63,7 @@ fn Prototype(comptime Self: type) type {
                 .self,
                 "strokeRect",
                 anyerror!void,
-                .{ rectangle, line_width, stroke_color, fill_color },
+                .{ self, rectangle, line_width, stroke_color, fill_color },
             )) |ret| try ret else {
                 // TODO: draw as 2 rects if fill_color is set
                 const ud_size = Size{
@@ -135,7 +135,7 @@ fn Prototype(comptime Self: type) type {
                 .ptr,
                 "texturedRect",
                 anyerror!void,
-                .{ src, dest, texture },
+                .{ self, src, dest, texture },
             );
         }
 
@@ -182,7 +182,13 @@ fn Prototype(comptime Self: type) type {
                     Color.fromInt(0x00ff00ff),
                 );
             }
-            return statspatch.implcall(self, .ptr, "span", anyerror!void, .{ pos, text_span });
+            return statspatch.implcall(
+                self,
+                .ptr,
+                "span",
+                anyerror!void,
+                .{ self, pos, text_span },
+            );
         }
 
         /// Draw the given chunk of text at the given position.
@@ -212,7 +218,7 @@ fn Prototype(comptime Self: type) type {
                 .ptr,
                 "chunk",
                 anyerror!void,
-                .{ pos, text_chunk },
+                .{ self, pos, text_chunk },
             )) |ret| try ret else {
                 for (text_chunk.spans.items) |ss| {
                     try self.span(pos.add(ss.position), ss.span);
@@ -222,4 +228,39 @@ fn Prototype(comptime Self: type) type {
     };
 }
 
-pub const Painter = statspatch.StatspatchType(Prototype, void, &zenolith.painter_impls);
+pub const PainterData = struct {
+    /// A stack of stencils to apply to the rendered shapes. This is used to render partial widgets.
+    /// The topmost stencil should be applied by the painter, if present.
+    sstack: std.ArrayList(Rectangle),
+
+    /// Create a new PainterData. Caller must call deinit.
+    pub fn init(alloc: std.mem.Allocator) PainterData {
+        return .{ .sstack = std.ArrayList(Rectangle).init(alloc) };
+    }
+
+    pub fn deinit(self: *PainterData) void {
+        self.sstack.deinit();
+    }
+
+    /// Pushes a rectangular stencil onto the stencil stack. This would typically be called by a
+    /// interested in drawing partial children in the Draw treevent handler.
+    pub fn pushStencil(self: *PainterData, rect: Rectangle) !void {
+        try self.sstack.append(rect);
+    }
+
+    /// Removes the topmost stencil from the stencil stack. The caller asserts that the stencil
+    /// stack is not empty.
+    pub fn popStencil(self: *PainterData) void {
+        _ = self.sstack.pop();
+    }
+
+    /// Returns the topmost stencil of the stencil stack or null if it is empty.
+    /// Painter implementations should call this when drawing shapes and perform clipping.
+    pub fn peekStencil(self: PainterData) ?Rectangle {
+        if (self.sstack.items.len == 0)
+            return null;
+        return self.sstack.items[self.sstack.items.len - 1];
+    }
+};
+
+pub const Painter = statspatch.StatspatchType(Prototype, PainterData, &zenolith.painter_impls);

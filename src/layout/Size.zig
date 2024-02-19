@@ -38,3 +38,11 @@ pub inline fn sub(self: Size, other: Size) Size {
 pub inline fn position(self: Size) Position {
     return .{ .x = self.width, .y = self.height };
 }
+
+/// Scales this size by a fraction given as a numerator and denominator.
+pub inline fn scaleFrac(self: Size, numerator: u31, denominator: u31) Size {
+    return .{
+        .width = self.width * numerator / denominator,
+        .height = self.height * numerator / denominator,
+    };
+}
