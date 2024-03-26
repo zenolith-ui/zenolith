@@ -22,7 +22,7 @@ fn Prototype(comptime Self: type) type {
         /// Called if the Backevent made it's way up the widget tree without being intercepted.
         /// The root widget will be passed.
         pub fn unhandled(self: Self, root: *Widget) !void {
-            try (statspatch.implcallOptional(
+            try @as(anyerror!void, statspatch.implcallOptional(
                 self,
                 .self,
                 "unhandled",

@@ -15,7 +15,7 @@ fn Prototype(comptime Self: type) type {
         /// Called when a widget subtree is unlinked on this platform.
         /// Do not call this directly, instead call Widget.unlink.
         pub fn onSubtreeUnlink(self: *Self, widget: *Widget) !void {
-            try (statspatch.implcallOptional(
+            try @as(anyerror!void, statspatch.implcallOptional(
                 self,
                 .ptr,
                 "onSubtreeUnlink",

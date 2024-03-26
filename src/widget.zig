@@ -48,7 +48,7 @@ fn Prototype(comptime Self: type) type {
 
             // Possibly call an initialize function. The widget can do any necessary
             // initialization of it's data here.
-            _ = try (statspatch.implcallOptional(self, .ptr, "initialize", anyerror!void, .{self}) orelse {});
+            _ = try @as(anyerror!void, statspatch.implcallOptional(self, .ptr, "initialize", anyerror!void, .{self}) orelse {});
             return self;
         }
 
@@ -80,7 +80,7 @@ fn Prototype(comptime Self: type) type {
         }
 
         pub fn backevent(self: *Self, ev: Backevent) !void {
-            try (statspatch.implcallOptional(
+            try @as(anyerror!void, statspatch.implcallOptional(
                 self,
                 .ptr,
                 "backevent",
@@ -169,7 +169,13 @@ fn Prototype(comptime Self: type) type {
         /// It is safe to deinitialize the subtree after it has been unlinked.
         pub fn unlink(self: *Self) !void {
             zenolith.log.debug("child {s}@{x} unlinked", .{ @tagName(self.u), @intFromPtr(self) });
-            try (statspatch.implcallOptional(self, .ptr, "unlink", anyerror!void, .{self}) orelse {});
+            try @as(anyerror!void, statspatch.implcallOptional(
+                self,
+                .ptr,
+                "unlink",
+                anyerror!void,
+                .{self},
+            ) orelse {});
 
             self.data.parent = null;
             if (self.data.platform) |p| try p.onSubtreeUnlink(self);

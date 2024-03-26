@@ -64,7 +64,7 @@ fn Prototype(comptime Self: type) type {
                 "strokeRect",
                 anyerror!void,
                 .{ self, rectangle, line_width, stroke_color, fill_color },
-            )) |ret| try ret else {
+            )) |ret| try @as(anyerror!void, ret) else {
                 // TODO: draw as 2 rects if fill_color is set
                 const ud_size = Size{
                     .width = rectangle.size.width,
@@ -219,7 +219,7 @@ fn Prototype(comptime Self: type) type {
                 "chunk",
                 anyerror!void,
                 .{ self, pos, text_chunk },
-            )) |ret| try ret else {
+            )) |ret| try @as(anyerror!void, ret) else {
                 for (text_chunk.spans.items) |ss| {
                     try self.span(pos.add(ss.position), ss.span);
                 }
