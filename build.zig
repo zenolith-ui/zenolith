@@ -7,7 +7,7 @@ pub fn build(b: *std.Build) void {
     const statspatch_dep = b.dependency("statspatch", .{ .target = target, .optimize = optimize });
 
     _ = b.addModule("zenolith", .{
-        .root_source_file = .{ .path = "src/main.zig" },
+        .root_source_file = b.path("src/main.zig"),
         .imports = &.{.{
             .name = "statspatch",
             .module = statspatch_dep.module("statspatch"),
@@ -15,7 +15,7 @@ pub fn build(b: *std.Build) void {
     });
 
     const main_tests = b.addTest(.{
-        .root_source_file = .{ .path = "src/main.zig" },
+        .root_source_file = b.path("src/main.zig"),
         .target = target,
         .optimize = optimize,
     });
