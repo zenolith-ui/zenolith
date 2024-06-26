@@ -9,8 +9,8 @@
 
     .dependencies = .{
         .statspatch = .{
-            .url = "git+https://git.mzte.de/lordmzte/statspatch.git#c9143e5e9cfcdad99a49748ce6df5ac5c31e51cd",
-            .hash = "1220d5aad80984589108230b8e16b8e823c16acbb123fce3c1e7c2e5be442b7366be",
+            .url = "git+https://git.mzte.de/LordMZTE/statspatch.git#fe27cf710f1db156acb8be4365d1a1a6365c6d95",
+            .hash = "1220c9e5c5d1fff2f7d1f5d02b235f832ef122c00bec0dc5ecf1c80995048addead9",
         },
     },
 }
